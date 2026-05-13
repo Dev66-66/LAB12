@@ -83,3 +83,13 @@
 **Результат:** Реализованы 5 сервисных файлов + __init__.py. Конечный автомат заказов: pending→{confirmed,cancelled}, confirmed→{preparing,cancelled}, preparing→{ready}, ready→{served}, served→{paid}. KitchenService.mark_ready автоматически переводит Order→ready когда все items готовы. KitchenStats.avg_prep_time вычисляется через updated_at-created_at для ready-items за текущий день. Все импорты и методы проверены.
 
 ---
+
+## Промпт 1.6 — API роутеры
+
+**Дата:** 2026-05-13
+
+**Промпт:** Реализуй все API роутеры для restaurant_management. auth.py (prefix=/auth): POST /register (201, UserRegister→UserResponse), POST /login (OAuth2PasswordRequestForm→Token), GET /me. tables.py (prefix=/tables): GET /, GET /available (min_capacity), GET /{id}, POST / (201, admin/manager), PUT /{id} (admin/manager), PATCH /{id}/status, DELETE /{id} (204, admin). menu.py (prefix=/menu): GET / (category, available_only), GET /search (q), GET /{id}, POST / (201), PUT /{id}, PATCH /{id}/availability, DELETE /{id} (204, admin). orders.py (prefix=/orders): GET / (role-filter: waiter→свои, admin/manager→все; status param), GET /active, GET /{id}, POST / (201), PATCH /{id}/status (OrderStatusUpdate), POST /{id}/close, DELETE /{id} (204, cancel). kitchen.py (prefix=/kitchen): GET /queue→list[KitchenQueueItem] (маппинг ORM→schema), PATCH /items/{id}/preparing, PATCH /items/{id}/ready, GET /stats. staff.py (prefix=/staff, router-level require_role): GET /, GET /stats (WaiterStats: paid orders count + revenue), GET /{id}, PATCH /{id}/deactivate. Docstring на каждый эндпоинт, response_model везде, HTTP 201/204. Коммит: «feat(api): add all REST API routers with role-based access control».
+
+**Результат:** Реализованы 6 роутеров, 32 API-эндпоинта зарегистрированы и проверены. Ключевые решения: staff.py с router-level dependencies=[Depends(require_role(...))]; kitchen.py с helper _to_queue_item() для маппинга ORM→KitchenQueueItem; orders.py с серверной фильтрацией по роли (waiter видит только свои заказы); WaiterStats считает только paid-заказы. main.py не изменялся (роутеры уже были подключены).
+
+---

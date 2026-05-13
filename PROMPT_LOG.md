@@ -43,3 +43,13 @@
 **Результат:** Реализованы 5 ORM-моделей: User (таблица users), Table (tables), MenuItem (menu_items), Order (orders), OrderItem (order_items). Создан TimestampMixin с Mapped[datetime]. Настроены все FK-связи и back_populates. Все модели экспортируются через app/models/__init__.py. Импорт проверен — ошибок нет (все 5 таблиц: users, tables, menu_items, orders, order_items).
 
 ---
+
+## Промпт 1.2 — Core-слой (config, security, dependencies, main)
+
+**Дата:** 2026-05-13
+
+**Промпт:** Реализуй core-слой для restaurant_management. app/core/config.py: Settings(BaseSettings) с полями DATABASE_URL, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, APP_NAME, APP_VERSION, DEBUG; синглтон settings. app/core/security.py: PWD_CONTEXT=CryptContext(bcrypt), hash_password, verify_password, create_access_token (с exp-клеймом), decode_token (None при ошибке). app/core/dependencies.py: get_db() — AsyncGenerator с async_sessionmaker; oauth2_scheme=OAuth2PasswordBearer; get_current_user() — декодирует токен, ищет по username, 401; get_current_active_user() — 403 если деактивирован; require_role(*roles) — фабрика dependency, 403 если роль не подходит. app/main.py: FastAPI с lifespan (create_all), CORSMiddleware (origins=["*"]), 6 роутеров с prefix="/api/v1", handler для RequestValidationError→422, GET /health. Коммит: «feat(core): add config, JWT security, and dependency injection».
+
+**Результат:** Реализованы app/core/config.py (Settings + синглтон), app/core/security.py (bcrypt + JWT), app/core/dependencies.py (get_db, get_current_user, get_current_active_user, require_role), app/main.py (FastAPI + lifespan + CORS + роутеры + /health). Заглушки роутеров api/v1/ заполнены минимальными APIRouter. Добавлено ограничение bcrypt<5.0.0 в pyproject.toml для совместимости с passlib. Все функции проверены: hash/verify пароля, JWT encode/decode, None при невалидном токене, маршруты FastAPI зарегистрированы.
+
+---

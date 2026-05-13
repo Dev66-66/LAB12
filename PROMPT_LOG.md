@@ -93,3 +93,13 @@
 **Результат:** Реализованы 6 роутеров, 32 API-эндпоинта зарегистрированы и проверены. Ключевые решения: staff.py с router-level dependencies=[Depends(require_role(...))]; kitchen.py с helper _to_queue_item() для маппинга ORM→KitchenQueueItem; orders.py с серверной фильтрацией по роли (waiter видит только свои заказы); WaiterStats считает только paid-заказы. main.py не изменялся (роутеры уже были подключены).
 
 ---
+
+## Промпт 1.7 — Инфраструктура (Alembic, Docker, Seed)
+
+**Дата:** 2026-05-13
+
+**Промпт:** Настрой инфраструктуру для restaurant_management. 1. Alembic async: alembic.ini (без хардкода URL), alembic/env.py (DATABASE_URL из os.environ/dotenv, target_metadata=Base.metadata, asyncio.run + AsyncEngine), alembic revision --autogenerate -m "initial_schema". Проверить индексы: users.email/username, tables.number, menu_items.category/is_available, orders.status. 2. Dockerfile multi-stage: builder (python:3.12-slim, pip install), runtime (non-root appuser, COPY site-packages, EXPOSE 8000, ENTRYPOINT alembic upgrade head + uvicorn). 3. docker-compose.yml: db (postgres:16-alpine, healthcheck pg_isready, volume postgres_data), app (build, env_file, depends_on service_healthy). 4. scripts/seed_db.py: 1 admin + 6 staff через Faker, 10 столов, 20 блюд по категориям, idempotent (проверка существования), asyncio + AsyncSession. Коммит: «feat(infra): add Alembic migrations, Docker config, and seed script».
+
+**Результат:** alembic.ini без sqlalchemy.url, alembic/env.py с async engine и импортом всех моделей. Миграция 3af91c40288a_initial_schema.py сгенерирована через autogenerate (sqlite+aiosqlite), улучшена: PostgreSQL ENUM-типы как переменные с явным drop в downgrade, server_default=now(), добавлен ix_tables_number. Все 6 индексов присутствуют. Dockerfile: 2-stage (builder+runtime), useradd appuser, ENTRYPOINT с alembic+uvicorn. docker-compose.yml: healthcheck + depends_on service_healthy. seed_db.py: 10 столов, 20 блюд (все 6 категорий), admin + 3 waiter + 2 chef + 1 manager через Faker, idempotent. Все файлы проверены синтаксически.
+
+---

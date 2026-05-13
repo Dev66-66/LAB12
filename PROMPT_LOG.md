@@ -73,3 +73,13 @@
 **Результат:** Реализованы 5 файлов схем + __init__.py. Ключевые решения: @field_validator на password (буква + цифра), computed_field + @property для menu_item_name/table_number/waiter_name через вспомогательные _*Minimal модели с exclude=True. Все валидаторы проверены: password без цифры → ошибка, password без буквы → ошибка, capacity>20 → ошибка, пустой items → ошибка. Все 19 классов экспортируются через schemas/__init__.py.
 
 ---
+
+## Промпт 1.5 — Сервисный слой
+
+**Дата:** 2026-05-13
+
+**Промпт:** Реализуй сервисный слой для restaurant_management. auth_service.py — AuthService: register (уникальность username/email → 409, hash_password, create), authenticate (get_by_username → 401, verify_password → 401, is_active → 403), create_token (JWT с sub+role). table_service.py — TableService: create_table (уникальность number → 409), update_status (404), get_available. menu_service.py — MenuService: create_item, update_item (404), toggle_availability (NOT is_available), search_items (query/category/available_only фильтры). order_service.py — OrderService: create_order (404 стол, 409 occupied, 404/400 items, snapshot unit_price, total_amount, статус стола→occupied), update_order_status (конечный автомат: pending→confirmed/cancelled, confirmed→preparing/cancelled, preparing→ready, ready→served, served→paid; 403 для чужих заказов у waiter), close_order (paid + стол→free), cancel_order (только pending/confirmed, стол→free). kitchen_service.py — KitchenService: get_queue, mark_preparing (pending→preparing + Order→preparing если первый), mark_ready (preparing→ready + Order→ready если все items готовы), get_stats (counts по статусам + avg_prep_time через updated_at-created_at для ready за сегодня). Коммит: «feat(services): add business logic layer with state machine for orders».
+
+**Результат:** Реализованы 5 сервисных файлов + __init__.py. Конечный автомат заказов: pending→{confirmed,cancelled}, confirmed→{preparing,cancelled}, preparing→{ready}, ready→{served}, served→{paid}. KitchenService.mark_ready автоматически переводит Order→ready когда все items готовы. KitchenStats.avg_prep_time вычисляется через updated_at-created_at для ready-items за текущий день. Все импорты и методы проверены.
+
+---

@@ -224,6 +224,16 @@
 
 ---
 
+## Промпт 5.6 — Удаление фильтра paths из ai_review.yml
+
+**Дата:** 2026-05-13
+
+**Промпт:** В файле .github/workflows/ai_review.yml убери фильтр paths полностью — workflow должен срабатывать на любые изменения в PR: `on: pull_request: types: [opened, synchronize] branches: [master]`. Обнови PROMPT_LOG.md. Коммит: «ci(ai-review): remove paths filter to trigger on any file changes».
+
+**Результат:** Из блока `on.pull_request` удалено поле `paths: ["app/**", "tests/**"]`. Теперь AI Code Review запускается на любой PR в ветку `master` независимо от того, какие файлы изменены.
+
+---
+
 ## Промпт 5.5 — Исправление триггера ai_review.yml (main → master)
 
 **Дата:** 2026-05-13

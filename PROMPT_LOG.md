@@ -143,3 +143,13 @@
 **Результат:** Создан .github/workflows/ai_review.yml: trigger на opened/synchronize PR в app/**+tests/**, job с permission pull-requests:write, 3 шага (checkout fetch-depth=0, get diff + wc -c в GITHUB_OUTPUT, python inline script с urllib + обработкой URLError, github-script createComment). Модель исправлена на claude-sonnet-4-6 (актуальный ID). Добавлена обработка ошибок API (URLError → информативный комментарий). README.md дополнен разделом «AI Code Review» с описанием алгоритма, примером структуры комментария и пошаговой инструкцией по настройке секрета.
 
 ---
+
+## Промпт 3.3 — Тестовое окружение (conftest.py)
+
+**Дата:** 2026-05-13
+
+**Промпт:** Настрой тестовое окружение для restaurant_management. tests/conftest.py: создай async pytest-фикстуры (pytest-asyncio, asyncio_mode=auto): async_engine (function-scope, SQLite in-memory + StaticPool, create_all/drop_all), async_session (function-scope, AsyncSession из engine), client (function-scope, override get_db + httpx AsyncClient с ASGITransport), make_user() (plain async helper, не фикстура — создаёт User через user_repository.create()), admin_user/waiter_user/chef_user (function-scope фикстуры через make_user), get_auth_headers() (plain sync helper, возвращает Bearer-заголовок через create_access_token), test_table/test_menu_item (function-scope, прямые вставки через session.add+commit), test_order (function-scope, через order_service.create_order). В pyproject.toml добавь asyncio_default_fixture_loop_scope="function". Коммит: «test(config): add pytest fixtures and test database configuration».
+
+**Результат:** Реализован tests/conftest.py (140 строк): os.environ.setdefault для DATABASE_URL и SECRET_KEY перед импортами модулей; async_engine с StaticPool + create_all/drop_all; async_session без rollback-изоляции (каждый тест получает чистую БД через свой engine); client с dependency_overrides[get_db] + AsyncClient(ASGITransport); make_user() factory с hash_password и user_repository.create(); 3 пользовательских фикстуры (admin/waiter/chef); get_auth_headers() через create_access_token; test_table и test_menu_item через прямые вставки; test_order через OrderService.create_order(). pyproject.toml дополнен asyncio_default_fixture_loop_scope="function" для подавления предупреждений pytest-asyncio 0.23+.
+
+---

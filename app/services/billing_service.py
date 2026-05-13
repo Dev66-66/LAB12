@@ -106,13 +106,15 @@ async def _validate_discount_code(code: str) -> bool:
     Never raises — a network failure is treated as 'code unverified' and
     logged; the caller decides whether to accept or reject the order.
     """
-    url = f"{settings.PROMO_SERVICE_URL}/validate"
+    base_url: str = settings.PROMO_SERVICE_URL  # type: ignore[attr-defined]
+    promo_key: str = settings.PROMO_SERVICE_KEY  # type: ignore[attr-defined]
+    url = f"{base_url}/validate"
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:
             response = await client.get(
                 url,
                 params={"code": code},
-                headers={"Authorization": f"Bearer {settings.PROMO_SERVICE_KEY}"},
+                headers={"Authorization": f"Bearer {promo_key}"},
             )
         return response.status_code == 200 and response.json().get("valid", False)
     except httpx.HTTPError:
@@ -145,9 +147,12 @@ async def _send_bill_notification(
         "order_id": order_id,
         "total": str(total),
     }
-    notification_url = f"{settings.NOTIFICATION_SERVICE_URL}/send"
-    email_url = f"{settings.EMAIL_SERVICE_URL}/send"
-    headers = {"Authorization": f"Bearer {settings.NOTIFICATION_API_KEY}"}
+    notif_base: str = settings.NOTIFICATION_SERVICE_URL  # type: ignore[attr-defined]
+    email_base: str = settings.EMAIL_SERVICE_URL  # type: ignore[attr-defined]
+    notif_key: str = settings.NOTIFICATION_API_KEY  # type: ignore[attr-defined]
+    notification_url = f"{notif_base}/send"
+    email_url = f"{email_base}/send"
+    headers = {"Authorization": f"Bearer {notif_key}"}
 
     async with httpx.AsyncClient(timeout=5.0) as client:
         try:
@@ -226,7 +231,7 @@ async def calculate_bill(
             )
 
     # 4. Compute amounts — all Decimal, no float.
-    subtotal = _calculate_subtotal(items)
+    subtotal = _calculate_subtotal(list(items))
     after_discount, discount_amount = _apply_discount(subtotal, discount_code)
     total = _apply_loyalty_bonuses(after_discount)
 

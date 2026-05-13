@@ -1,10 +1,14 @@
+from typing import Generic, TypeVar
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.base import Base
 
+ModelType = TypeVar("ModelType", bound=Base)
 
-class BaseRepository[ModelType: Base]:
+
+class BaseRepository(Generic[ModelType]):  # noqa: UP046
     """Generic async repository providing basic CRUD over a SQLAlchemy model."""
 
     def __init__(self, model: type[ModelType]) -> None:
@@ -12,7 +16,7 @@ class BaseRepository[ModelType: Base]:
 
     async def get(self, db: AsyncSession, id: int) -> ModelType | None:
         """Return a single record by primary key, or None if not found."""
-        result = await db.execute(select(self._model).where(self._model.id == id))
+        result = await db.execute(select(self._model).where(self._model.id == id))  # type: ignore[attr-defined]
         return result.scalars().first()
 
     async def get_all(

@@ -60,7 +60,7 @@ class OrderItemResponse(BaseModel):
     # Loaded via selectin; excluded so it does not appear in the JSON output.
     menu_item: _MenuItemMinimal | None = Field(default=None, exclude=True)
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def menu_item_name(self) -> str:
         """Dish name resolved from the menu_item relationship."""
@@ -85,13 +85,13 @@ class OrderResponse(BaseModel):
     table: _TableMinimal | None = Field(default=None, exclude=True)
     waiter: _UserMinimal | None = Field(default=None, exclude=True)
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def table_number(self) -> int | None:
         """Physical table number resolved from the table relationship."""
         return self.table.number if self.table else None
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def waiter_name(self) -> str | None:
         """Waiter's full name resolved from the user relationship."""

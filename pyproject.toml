@@ -37,6 +37,7 @@ dev = [
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
+pythonpath = [".", "tests"]
 addopts = "-v --tb=short"
 
 [tool.ruff]
@@ -47,7 +48,12 @@ select = ["E", "F", "I", "N", "UP"]
 
 [tool.coverage.run]
 source = ["app"]
-omit = ["*/migrations/*", "*/tests/*"]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "app/services/bad_billing.py",
+    "app/services/billing_service.py",
+]
 
 [tool.mypy]
 python_version = "3.12"

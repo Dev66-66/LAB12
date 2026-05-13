@@ -1,0 +1,73 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.3, pytest-9.0.3, pluggy-1.6.0
+rootdir: C:\Users\maksv\restaurant_management
+configfile: pyproject.toml
+testpaths: tests
+plugins: allure-pytest-2.16.0, anyio-4.13.0, asyncio-1.3.0, flask-1.3.0, html-4.2.0, metadata-3.1.1, respx-0.22.0, Faker-40.15.0, cov-7.1.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
+collected 66 items
+
+tests\test_auth.py ...........                                           [ 16%]
+tests\test_kitchen.py ..........                                         [ 31%]
+tests\test_menu.py ...................                                   [ 60%]
+tests\test_orders.py ..............                                      [ 81%]
+tests\test_tables.py ............                                        [100%]
+
+============================== warnings summary ===============================
+tests/test_auth.py::test_register_with_weak_password_returns_422
+tests/test_auth.py::test_register_with_short_username_returns_422
+tests/test_orders.py::test_create_order_with_empty_items_returns_422
+tests/test_tables.py::test_create_table_with_zero_capacity_returns_422
+tests/test_tables.py::test_create_table_with_capacity_over_20_returns_422
+  C:\Users\maksv\AppData\Roaming\Python\Python314\site-packages\starlette\_exception_handler.py:59: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    response = await handler(conn, exc)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.14.3-final-0 _______________
+
+Name                                   Stmts   Miss  Cover   Missing
+--------------------------------------------------------------------
+app\__init__.py                            0      0   100%
+app\api\__init__.py                        0      0   100%
+app\api\v1\__init__.py                     0      0   100%
+app\api\v1\auth.py                        18      0   100%
+app\api\v1\kitchen.py                     24      0   100%
+app\api\v1\menu.py                        36      0   100%
+app\api\v1\orders.py                      39      2    95%   38, 68
+app\api\v1\staff.py                       36      2    94%   47, 90
+app\api\v1\tables.py                      39      5    87%   85-88, 119
+app\core\__init__.py                       0      0   100%
+app\core\config.py                         9      0   100%
+app\core\dependencies.py                  39      7    82%   20-24, 43, 48, 58
+app\core\security.py                      20      0   100%
+app\main.py                               33      5    85%   18-22
+app\models\__init__.py                     7      0   100%
+app\models\base.py                         8      0   100%
+app\models\menu_item.py                   24      0   100%
+app\models\order.py                       26      0   100%
+app\models\order_item.py                  26      0   100%
+app\models\table.py                       19      0   100%
+app\models\user.py                        23      0   100%
+app\repositories\__init__.py               5      0   100%
+app\repositories\base_repository.py       33      0   100%
+app\repositories\menu_repository.py       18      0   100%
+app\repositories\order_repository.py      27      4    85%   21-24, 35-38
+app\repositories\table_repository.py      17      2    88%   21-22
+app\repositories\user_repository.py       17      0   100%
+app\schemas\__init__.py                    6      0   100%
+app\schemas\auth.py                       17      1    94%   22
+app\schemas\menu_item.py                  18      0   100%
+app\schemas\order.py                      39      0   100%
+app\schemas\staff.py                       6      0   100%
+app\schemas\table.py                      14      0   100%
+app\services\__init__.py                   6      0   100%
+app\services\auth_service.py              24      1    96%   48
+app\services\kitchen_service.py           51      2    96%   105-108
+app\services\menu_service.py              33      3    91%   22, 33, 59
+app\services\order_service.py             72      7    90%   56, 109, 116, 137, 153, 158, 163
+app\services\table_service.py             18      1    94%   27
+--------------------------------------------------------------------
+TOTAL                                    847     42    95%
+Coverage HTML written to dir htmlcov
+======================= 66 passed, 5 warnings in 33.31s =======================

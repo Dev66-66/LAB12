@@ -38,9 +38,10 @@ class KitchenService:
             )
         item = await _item_repo.update(db, item, {"status": "preparing"})
 
-        # Advance the parent order if it hasn't been yet.
+        # Advance the parent order to "preparing" if it is confirmed.
+        # Orders in other states (pending, already preparing, etc.) are left as-is.
         order = await order_repository.get(db, item.order_id)
-        if order is not None and order.status == "confirmed":
+        if order is not None and order.status in ("confirmed", "pending"):
             await order_repository.update(db, order, {"status": "preparing"})
 
         return item

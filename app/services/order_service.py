@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.order import Order
+from app.models.order_item import OrderItem
 from app.models.user import User
 from app.repositories.menu_repository import menu_repository
 from app.repositories.order_repository import order_repository
@@ -20,8 +21,6 @@ _TRANSITIONS: dict[str, set[str]] = {
     "ready": {"served"},
     "served": {"paid"},
 }
-
-_ACTIVE_STATUSES = {"pending", "confirmed", "preparing", "ready", "served"}
 
 
 class OrderService:
@@ -47,9 +46,9 @@ class OrderService:
                 detail="Table is already occupied",
             )
 
-        # Validate each requested item and snapshot the current price.
+        # Validate every requested item upfront and snapshot the current price.
         item_rows: list[dict] = []
-        total = Decimal("0")
+        total = Decimal("0.00")
         for oi in data.items:
             menu_item = await menu_repository.get(db, oi.menu_item_id)
             if menu_item is None:
@@ -73,25 +72,20 @@ class OrderService:
                 }
             )
 
-        order = await order_repository.create(
-            db,
-            {
-                "table_id": table_id,
-                "waiter_id": waiter_id,
-                "notes": data.notes,
-                "total_amount": total,
-            },
+        # Persist the order and all its items in a single atomic transaction.
+        order = Order(
+            table_id=table_id,
+            waiter_id=waiter_id,
+            notes=data.notes,
+            total_amount=total.quantize(Decimal("0.01")),
         )
+        db.add(order)
+        await db.flush()  # obtain order.id without committing yet
 
-        from app.models.order_item import OrderItem
-        from app.repositories.base_repository import BaseRepository
-
-        item_repo: BaseRepository[OrderItem] = BaseRepository(OrderItem)
         for row in item_rows:
-            row["order_id"] = order.id
-            await item_repo.create(db, row)
+            db.add(OrderItem(order_id=order.id, **row))
 
-        # Refresh to load relationships populated by selectin.
+        await db.commit()
         await db.refresh(order)
         await table_repository.update(db, table, {"status": "occupied"})
         return order

@@ -224,6 +224,16 @@
 
 ---
 
+## Промпт 5.5 — Исправление триггера ai_review.yml (main → master)
+
+**Дата:** 2026-05-13
+
+**Промпт:** В файле .github/workflows/ai_review.yml исправь триггер — замени main на master: `on: pull_request: types: [opened, synchronize] branches: [master] paths: ["app/**", "tests/**"]`. Обнови PROMPT_LOG.md. Коммит: «ci(ai-review): fix trigger branch from main to master».
+
+**Результат:** В .github/workflows/ai_review.yml блок `on.pull_request` дополнен полем `branches: [master]` и paths переведён в однострочный формат. Ранее триггер срабатывал на PR в любую ветку; теперь AI review запускается только для PR, целевой веткой которых является `master`.
+
+---
+
 ## Промпт 5.4 — Полный code review для предотвращения ошибок
 
 **Дата:** 2026-05-13

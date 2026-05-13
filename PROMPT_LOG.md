@@ -103,3 +103,13 @@
 **Результат:** alembic.ini без sqlalchemy.url, alembic/env.py с async engine и импортом всех моделей. Миграция 3af91c40288a_initial_schema.py сгенерирована через autogenerate (sqlite+aiosqlite), улучшена: PostgreSQL ENUM-типы как переменные с явным drop в downgrade, server_default=now(), добавлен ix_tables_number. Все 6 индексов присутствуют. Dockerfile: 2-stage (builder+runtime), useradd appuser, ENTRYPOINT с alembic+uvicorn. docker-compose.yml: healthcheck + depends_on service_healthy. seed_db.py: 10 столов, 20 блюд (все 6 категорий), admin + 3 waiter + 2 chef + 1 manager через Faker, idempotent. Все файлы проверены синтаксически.
 
 ---
+
+## Промпт 2.1 — Намеренно плохой код (учебный материал)
+
+**Дата:** 2026-05-13
+
+**Промпт:** Напиши функцию расчёта итогового счёта С НАМЕРЕННЫМИ ОШИБКАМИ для учебного code review. Создай app/services/bad_billing.py с функцией calculate_bill(order_id, discount_code), содержащей все 10 проблем: 1) магические числа (0.1, 0.15, 0.05, 500, 1000), 2) функция >50 строк без разбивки, 3) отсутствие обработки ошибок и None-проверок, 4) неинформативные имена (x, y, z, tmp, d, res, data2), 5) SQL-инъекция (f-строка с user input в SQL), 6) дублирование расчёта скидки 3 раза, 7) синхронный блокирующий I/O (requests.get, time.sleep) в async-функции, 8) отсутствие type hints, 9) захардкоженные credentials (DB_PASSWORD, SECRET_KEY), 10) ноль комментариев/docstring. Код должен выглядеть реально, не как пародия. Коммит: «feat(review-exercise): add intentionally flawed billing code for review».
+
+**Результат:** Создан app/services/bad_billing.py (~70 строк). Все 10 проблем реализованы: psycopg2.connect с хардкодом пароля и host, f-строки с order_id/discount_code в SQL (инъекция в SELECT, UPDATE и INSERT), расчёт скидки дублирован для SAVE10/SAVE15/STAFF, requests.get/post и time.sleep(2)+time.sleep(1) внутри async-функции, имена x/y/z/d/res/data2/tmp, ноль type hints, ноль docstring.
+
+---

@@ -46,18 +46,18 @@ jobs:
           except FileNotFoundError:
               diff = "No diff available"
 
-          prompt = f"""Ты — senior Python разработчик. Проведи краткий code review следующего git diff.
-
-{diff}
-
-Ответ на русском языке в формате Markdown со следующими секциями:
-## 🤖 AI Code Review (Groq)
-### 🐛 Возможные баги
-### 🔒 Безопасность
-### ✅ Хорошие практики
-### 📋 Итог
----
-*Автоматическое ревью от Groq (llama-3.3-70b-versatile)*"""
+          prompt = (
+              "Ты — senior Python разработчик. Проведи краткий code review следующего git diff.\n\n"
+              + diff
+              + "\n\nОтвет на русском языке в формате Markdown со следующими секциями:\n"
+              "## 🤖 AI Code Review (Groq)\n"
+              "### 🐛 Возможные баги\n"
+              "### 🔒 Безопасность\n"
+              "### ✅ Хорошие практики\n"
+              "### 📋 Итог\n"
+              "---\n"
+              "*Автоматическое ревью от Groq (llama-3.3-70b-versatile)*"
+          )
 
           payload = json.dumps({
               "model": "llama-3.3-70b-versatile",

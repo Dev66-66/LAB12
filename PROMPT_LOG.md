@@ -123,3 +123,13 @@
 **Результат:** Найдено и задокументировано 10 проблем: 3×Critical (SQL-injection в 5 запросах, hardcoded secrets, secret leak via HTTP), 2×High (sync I/O in async, нет обработки ошибок), 3×Medium (дублирование скидок, магические числа + float для денег, нарушение SRP), 2×Low (имена переменных, type hints/docstring). docs/CODE_REVIEW_REPORT.md содержит полный разбор с таблицей severity. billing_service.py (257 строк): BillResult dataclass, DISCOUNT_RATES/пороги как Final[Decimal], 5 private helpers (_calculate_subtotal, _apply_discount, _apply_loyalty_bonuses, _validate_discount_code, _persist_bill, _send_bill_notification), httpx вместо requests, ORM select() без f-строк, HTTPException на каждый None, полные type hints и docstrings.
 
 ---
+
+## Промпт 3.1 — GitHub Actions CI Pipeline
+
+**Дата:** 2026-05-13
+
+**Промпт:** Создай GitHub Actions workflow .github/workflows/ci.yml: name=CI Pipeline, on push/PR к main/develop/master. Jobs: lint (ruff check + mypy --ignore-missing-imports), test (pip install -e ".[dev]", pytest --cov=app --cov-report=xml --cov-fail-under=70, codecov/codecov-action@v4), security (bandit -r app/ -ll), docker-build (docker build -t restaurant-app:test .). Добавь badge'и в README.md: CI badge и Coverage badge от Codecov. Обнови PROMPT_LOG.md. Коммит: «ci: add GitHub Actions CI pipeline with lint, test, security, docker».
+
+**Результат:** Создан .github/workflows/ci.yml с 4 независимыми jobs: lint (ruff + mypy), test (pytest + coverage ≥70% + codecov upload), security (bandit -ll с исключением bad_billing.py), docker-build. В test-job добавлены env-переменные DATABASE_URL=sqlite+aiosqlite и SECRET_KEY для работы без PostgreSQL. Bandit исключает намеренно плохой файл bad_billing.py. README.md обновлён: добавлены 2 badge (CI + Coverage). PROMPT_LOG.md обновлён.
+
+---

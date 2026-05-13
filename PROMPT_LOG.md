@@ -133,3 +133,13 @@
 **Результат:** Создан .github/workflows/ci.yml с 4 независимыми jobs: lint (ruff + mypy), test (pytest + coverage ≥70% + codecov upload), security (bandit -ll с исключением bad_billing.py), docker-build. В test-job добавлены env-переменные DATABASE_URL=sqlite+aiosqlite и SECRET_KEY для работы без PostgreSQL. Bandit исключает намеренно плохой файл bad_billing.py. README.md обновлён: добавлены 2 badge (CI + Coverage). PROMPT_LOG.md обновлён.
 
 ---
+
+## Промпт 3.2 — AI Code Review Workflow
+
+**Дата:** 2026-05-13
+
+**Промпт:** Создай GitHub Actions workflow .github/workflows/ai_review.yml для автоматического AI code review при создании PR. on: pull_request types=[opened,synchronize], paths=[app/**, tests/**]. Job ai-review: permissions pull-requests=write, checkout fetch-depth=0, Get PR diff (git diff origin/base...HEAD → pr_diff.txt, diff_size в GITHUB_OUTPUT), AI Code Review via Claude API (python inline script: читает diff до 8000 символов, отправляет в https://api.anthropic.com/v1/messages с model=claude-sonnet-4-20250514, max_tokens=1500, сохраняет review_comment.txt), Post review comment (actions/github-script@v7, createComment). В README добавь раздел «AI Code Review»: как работает, инструкция по настройке ANTHROPIC_API_KEY (Settings→Secrets→Actions→New secret), заглушка для скриншота. Коммит: «ci(ai-review): add AI code review workflow for Pull Requests».
+
+**Результат:** Создан .github/workflows/ai_review.yml: trigger на opened/synchronize PR в app/**+tests/**, job с permission pull-requests:write, 3 шага (checkout fetch-depth=0, get diff + wc -c в GITHUB_OUTPUT, python inline script с urllib + обработкой URLError, github-script createComment). Модель исправлена на claude-sonnet-4-6 (актуальный ID). Добавлена обработка ошибок API (URLError → информативный комментарий). README.md дополнен разделом «AI Code Review» с описанием алгоритма, примером структуры комментария и пошаговой инструкцией по настройке секрета.
+
+---

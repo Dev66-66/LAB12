@@ -53,3 +53,13 @@
 **Результат:** Реализованы app/core/config.py (Settings + синглтон), app/core/security.py (bcrypt + JWT), app/core/dependencies.py (get_db, get_current_user, get_current_active_user, require_role), app/main.py (FastAPI + lifespan + CORS + роутеры + /health). Заглушки роутеров api/v1/ заполнены минимальными APIRouter. Добавлено ограничение bcrypt<5.0.0 в pyproject.toml для совместимости с passlib. Все функции проверены: hash/verify пароля, JWT encode/decode, None при невалидном токене, маршруты FastAPI зарегистрированы.
 
 ---
+
+## Промпт 1.3 — Repository-слой
+
+**Дата:** 2026-05-13
+
+**Промпт:** Реализуй Repository-слой для restaurant_management. base_repository.py — Generic[ModelType]: get, get_all (skip/limit), create, update, delete (bool). user_repository.py — UserRepository: get_by_email, get_by_username, get_active_staff. table_repository.py — TableRepository: get_by_number, get_by_status, get_available (status=free + capacity>=min_capacity). menu_repository.py — MenuRepository: get_by_category, get_available (is_available=True), search (ilike по name OR description). order_repository.py — OrderRepository: get_by_table, get_by_waiter, get_by_status, get_active_orders (pending/confirmed/preparing/ready/served), get_kitchen_queue (OrderItem pending/preparing, order_by created_at asc, eager load menu_item + order.table). Все методы async, type hints, без бизнес-логики. Коммит: «feat(repositories): add data access layer with generic base repository».
+
+**Результат:** Реализованы 5 файлов: base_repository.py (Generic BaseRepository с 5 методами CRUD), user_repository.py (3 метода + синглтон user_repository), table_repository.py (3 метода + синглтон), menu_repository.py (3 метода + ilike-поиск + синглтон), order_repository.py (5 методов + get_kitchen_queue с selectinload + синглтон). Обновлён repositories/__init__.py. Импорт проверен: все 5+3+3+3+5 методов зарегистрированы корректно.
+
+---

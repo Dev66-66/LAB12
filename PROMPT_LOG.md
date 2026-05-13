@@ -224,6 +224,16 @@
 
 ---
 
+## Промпт 5.12 — Замена модели gemini-2.0-flash на gemini-1.5-flash
+
+**Дата:** 2026-05-13
+
+**Промпт:** В файле .github/workflows/ai_review.yml замени модель gemini-2.0-flash на gemini-1.5-flash в вызове `client.models.generate_content(model="gemini-1.5-flash", contents=prompt)`. Обнови PROMPT_LOG.md. Коммит: «ci(ai-review): switch to gemini-1.5-flash model».
+
+**Результат:** В шаге "AI Code Review via Gemini API" значение параметра `model` изменено с `"gemini-2.0-flash"` на `"gemini-1.5-flash"`. Модель gemini-1.5-flash более стабильна в бесплатном tier Gemini API.
+
+---
+
 ## Промпт 5.11 — Переход на новую библиотеку google-genai с моделью gemini-2.0-flash
 
 **Дата:** 2026-05-13

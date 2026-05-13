@@ -7,7 +7,7 @@ on:
 
 jobs:
   ai-review:
-    name: AI Code Review (Groq)
+    name: AI Code Review (Gemini)
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write   # required to post the review comment
@@ -60,13 +60,13 @@ jobs:
               "### ✅ Хорошие практики\n"
               "### 📋 Итог\n\n"
               "---\n"
-              "*Автоматическое ревью от Google Gemini 2.0 Flash."
+              "*Автоматическое ревью от Google Gemini 2.0 Flash Lite."
               " Результаты носят рекомендательный характер.*"
           )
 
           try:
               response = client.models.generate_content(
-                  model="gemini-1.5-flash",
+                  model="gemini-2.0-flash-lite",
                   contents=prompt
               )
               review_text = response.text

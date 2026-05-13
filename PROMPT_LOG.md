@@ -224,6 +224,16 @@
 
 ---
 
+## Промпт 5.13 — Замена модели на gemini-2.0-flash-lite
+
+**Дата:** 2026-05-13
+
+**Промпт:** В файле .github/workflows/ai_review.yml замени модель на gemini-2.0-flash-lite (бесплатная с отдельной квотой) в вызове `client.models.generate_content(model="gemini-2.0-flash-lite", contents=prompt)`. Обнови PROMPT_LOG.md. Коммит: «ci(ai-review): switch to gemini-2.0-flash-lite model».
+
+**Результат:** Параметр `model` изменён на `"gemini-2.0-flash-lite"`. Дополнительно исправлено устаревшее имя job с `AI Code Review (Groq)` на `AI Code Review (Gemini)`, обновлён footer промпта на "Google Gemini 2.0 Flash Lite".
+
+---
+
 ## Промпт 5.12 — Замена модели gemini-2.0-flash на gemini-1.5-flash
 
 **Дата:** 2026-05-13

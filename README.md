@@ -507,3 +507,4 @@ Pytest-suite с покрытием 95% (847 statements):
 <!-- test AI review -->
 <!-- test Gemini review -->
 <!-- trigger -->
+<!-- trigger -->

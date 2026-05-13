@@ -224,6 +224,16 @@
 
 ---
 
+## Промпт 5.8 — Улучшенная обработка ошибок и валидация ключа в ai_review.yml
+
+**Дата:** 2026-05-13
+
+**Промпт:** В файле .github/workflows/ai_review.yml полностью заменить шаги "AI Code Review via Groq API" и "Post review comment to PR": использовать `python3 << 'PYEOF'` вместо `python - <<'EOF'`; добавить валидацию GROQ_API_KEY (exit(1) если пустой); обернуть чтение diff в try/except FileNotFoundError; добавить обработку urllib.error.HTTPError с выводом тела ответа и записью сообщения об ошибке в review_comment.txt; в шаге Post review comment добавить try/catch для чтения файла ревью. Обнови PROMPT_LOG.md. Коммит: «ci(ai-review): fix 403 error with better error handling and key validation».
+
+**Результат:** Шаг `AI Code Review via Groq API`: переключён на `python3 << 'PYEOF'`; добавлена проверка `GROQ_API_KEY` с `exit(1)` и выводом первых 8 символов ключа; diff читается через try/except (fallback: "No diff available"); `max_tokens` снижен до 1000, diff обрезан до 6000 символов; HTTP-ошибки перехватываются через `urllib.error.HTTPError` — тело ответа выводится в лог и записывается в `review_comment.txt` как сообщение об ошибке. Шаг `Post review comment to PR`: добавлен try/catch для чтения `review_comment.txt` (fallback: сообщение о недоступности ревью).
+
+---
+
 ## Промпт 5.7 — Исправление шага Get PR diff и условий always()
 
 **Дата:** 2026-05-13

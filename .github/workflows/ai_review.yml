@@ -31,59 +31,62 @@ jobs:
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
-          python - <<'EOF'
-          import os, json, urllib.request
+          python3 << 'PYEOF'
+          import os, json, urllib.request, urllib.error
 
-          diff = open("pr_diff.txt").read()[:8000]
+          api_key = os.environ.get("GROQ_API_KEY", "")
+          if not api_key:
+              print("ERROR: GROQ_API_KEY is empty!")
+              exit(1)
 
-          prompt = f"""Ты — senior Python разработчик. Проведи code review следующего git diff для системы управления рестораном (FastAPI + SQLAlchemy).
+          print(f"API key starts with: {api_key[:8]}...")
 
-          {diff}
+          try:
+              diff = open("pr_diff.txt").read()[:6000]
+          except FileNotFoundError:
+              diff = "No diff available"
 
-          Ответ строго на русском языке в формате Markdown:
+          prompt = f"""Ты — senior Python разработчик. Проведи краткий code review следующего git diff.
 
-          ## 🤖 AI Code Review (Groq)
+{diff}
 
-          ### 🐛 Возможные баги
-          [найденные баги или «Не обнаружено»]
+Ответ на русском языке в формате Markdown со следующими секциями:
+## 🤖 AI Code Review (Groq)
+### 🐛 Возможные баги
+### 🔒 Безопасность
+### ✅ Хорошие практики
+### 📋 Итог
+---
+*Автоматическое ревью от Groq (llama-3.3-70b-versatile)*"""
 
-          ### 🔒 Безопасность
-          [уязвимости или «Не обнаружено»]
+          payload = json.dumps({
+              "model": "llama-3.3-70b-versatile",
+              "max_tokens": 1000,
+              "messages": [{"role": "user", "content": prompt}]
+          }).encode("utf-8")
 
-          ### ⚡ Производительность
-          [проблемы производительности или «Не обнаружено»]
-
-          ### 📝 Стиль и PEP 8
-          [нарушения стиля или «Не обнаружено»]
-
-          ### ✅ Хорошие практики
-          [что сделано хорошо]
-
-          ### 📋 Итог
-          [1-2 предложения общего вывода]
-
-          ---
-          *Автоматическое ревью от Groq (llama-3.3-70b-versatile). Результаты носят рекомендательный характер.*"""
-
-          request = urllib.request.Request(
+          req = urllib.request.Request(
               "https://api.groq.com/openai/v1/chat/completions",
-              data=json.dumps({
-                  "model": "llama-3.3-70b-versatile",
-                  "max_tokens": 1500,
-                  "messages": [{"role": "user", "content": prompt}]
-              }).encode(),
+              data=payload,
               headers={
                   "Content-Type": "application/json",
-                  "Authorization": f"Bearer {os.environ['GROQ_API_KEY']}"
+                  "Authorization": f"Bearer {api_key}"
               }
           )
-          response = urllib.request.urlopen(request)
-          result = json.loads(response.read())
-          review_text = result["choices"][0]["message"]["content"]
+
+          try:
+              with urllib.request.urlopen(req) as resp:
+                  result = json.loads(resp.read())
+                  review_text = result["choices"][0]["message"]["content"]
+                  print("SUCCESS: Got review from Groq")
+          except urllib.error.HTTPError as e:
+              body = e.read().decode()
+              print(f"HTTP Error {e.code}: {body}")
+              review_text = f"⚠️ Ошибка AI ревью: HTTP {e.code}\n```\n{body}\n```"
 
           with open("review_comment.txt", "w") as f:
               f.write(review_text)
-          EOF
+          PYEOF
 
       # ── 3. Post the review as a PR comment ──────────────────────────────
       - name: Post review comment to PR
@@ -92,11 +95,15 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const comment = fs.readFileSync('review_comment.txt', 'utf8');
+            let comment;
+            try {
+              comment = fs.readFileSync('review_comment.txt', 'utf8');
+            } catch(e) {
+              comment = '⚠️ AI Code Review не удалось выполнить: файл ревью не найден.';
+            }
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: comment,
+              body: comment
             });
-            console.log('Review comment posted successfully.');

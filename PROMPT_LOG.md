@@ -33,3 +33,13 @@
 **Результат:** Создан pyproject.toml с hatchling в качестве build-backend, 10 production-зависимостями и 9 dev-зависимостями, секциями tool.pytest.ini_options, tool.ruff, tool.ruff.lint, tool.coverage.run, tool.mypy, tool.hatch.build.targets.wheel. Выполнен pip install -e ".[dev]" — все зависимости установлены успешно (restaurant-management 1.0.0). Обновлён PROMPT_LOG.md.
 
 ---
+
+## Промпт 1.1 — SQLAlchemy ORM-модели
+
+**Дата:** 2026-05-13
+
+**Промпт:** Реализуй SQLAlchemy 2.0 async ORM-модели для системы управления рестораном. app/models/base.py: Base = DeclarativeBase(), TimestampMixin с created_at/updated_at через Mapped[datetime]. app/models/user.py — модель User(Base, TimestampMixin): id, username (String(50), unique, index), email (String(255), unique, index), hashed_password, full_name (String(100)), role (Enum admin/manager/waiter/chef), is_active (bool), relationship orders→Order. app/models/table.py — Table: id, number (unique), capacity, status (Enum free/occupied/reserved/maintenance), location (Optional[str]), relationship orders→Order. app/models/menu_item.py — MenuItem: id, name, description (Optional[Text]), category (Enum 6 значений, index), price (Numeric(10,2)), preparation_time_minutes, is_available (bool, index), calories (Optional[int]). app/models/order.py — Order: id, table_id (FK), waiter_id (FK), status (Enum 7 значений, index), total_amount (Numeric(10,2)), notes (Optional[Text]), relationships table/waiter/items. app/models/order_item.py — OrderItem: id, order_id (FK), menu_item_id (FK), quantity, unit_price (Numeric(10,2)), status (Enum 5 значений), notes (Optional[String(255)]), relationships order/menu_item. Все модели с Mapped[], docstring, lazy="selectin", back_populates. Импорт через models/__init__.py. Коммит: «feat(models): add SQLAlchemy ORM models for all restaurant entities».
+
+**Результат:** Реализованы 5 ORM-моделей: User (таблица users), Table (tables), MenuItem (menu_items), Order (orders), OrderItem (order_items). Создан TimestampMixin с Mapped[datetime]. Настроены все FK-связи и back_populates. Все модели экспортируются через app/models/__init__.py. Импорт проверен — ошибок нет (все 5 таблиц: users, tables, menu_items, orders, order_items).
+
+---

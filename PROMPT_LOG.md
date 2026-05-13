@@ -224,6 +224,16 @@
 
 ---
 
+## Промпт 5.7 — Исправление шага Get PR diff и условий always()
+
+**Дата:** 2026-05-13
+
+**Промпт:** В файле .github/workflows/ai_review.yml исправь шаг "Get PR diff" и условия на последующих шагах: шаг Get PR diff — убрать фильтр `-- app/ tests/`, добавить `cat pr_diff.txt`; шаги "AI Code Review via Groq API" и "Post review comment to PR" — заменить условие `if: steps.diff.outputs.diff_size != '0'` на `if: always()`. Обнови PROMPT_LOG.md. Коммит: «ci(ai-review): fix skipped steps by replacing diff_size condition with always()».
+
+**Результат:** В шаге `Get PR diff`: убран фильтр `-- app/ tests/` (diff теперь охватывает все файлы PR), добавлен `cat pr_diff.txt` для отладочного вывода в лог. В шагах `AI Code Review via Groq API` и `Post review comment to PR` условие `if: steps.diff.outputs.diff_size != '0'` заменено на `if: always()` — шаги больше не пропускаются из-за некорректного сравнения строк с числом.
+
+---
+
 ## Промпт 5.6 — Удаление фильтра paths из ai_review.yml
 
 **Дата:** 2026-05-13

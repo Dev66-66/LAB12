@@ -21,12 +21,13 @@ jobs:
       - name: Get PR diff
         id: diff
         run: |
-          git diff origin/${{ github.base_ref }}...HEAD -- app/ tests/ > pr_diff.txt
+          git diff origin/${{ github.base_ref }}...HEAD > pr_diff.txt
           echo "diff_size=$(wc -c < pr_diff.txt)" >> $GITHUB_OUTPUT
+          cat pr_diff.txt
 
       # ── 2. Call Groq API and generate the review ──────────────────────
       - name: AI Code Review via Groq API
-        if: steps.diff.outputs.diff_size != '0'
+        if: always()
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
@@ -86,7 +87,7 @@ jobs:
 
       # ── 3. Post the review as a PR comment ──────────────────────────────
       - name: Post review comment to PR
-        if: steps.diff.outputs.diff_size != '0'
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |

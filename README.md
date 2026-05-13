@@ -502,3 +502,5 @@ Pytest-suite с покрытием 95% (847 statements):
 2. В репозитории на GitHub: **Settings → Secrets and variables → Actions → New repository secret**
 3. Имя: `GROQ_API_KEY`, значение: ваш ключ
 4. Сохраните — все последующие PR будут автоматически проходить AI-ревью
+
+<!-- test AI review -->

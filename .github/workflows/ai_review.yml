@@ -60,13 +60,13 @@ jobs:
               "### ✅ Хорошие практики\n"
               "### 📋 Итог\n\n"
               "---\n"
-              "*Автоматическое ревью от Google Gemini 2.0 Flash Lite."
+              "*Автоматическое ревью от Google Gemini 2.5 Flash."
               " Результаты носят рекомендательный характер.*"
           )
 
           try:
               response = client.models.generate_content(
-                  model="gemini-2.0-flash-lite",
+                  model="gemini-2.5-flash",
                   contents=prompt
               )
               review_text = response.text

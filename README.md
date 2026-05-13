@@ -412,7 +412,7 @@ restaurant_management/
 │
 ├── .github/workflows/
 │   ├── ci.yml                      # CI: lint, test, security, docker build
-│   └── ai_review.yml               # AI code review через Claude API
+│   └── ai_review.yml               # AI code review через Groq API
 │
 ├── Dockerfile                      # Multi-stage сборка (builder + runtime, non-root user)
 ├── docker-compose.yml              # PostgreSQL 16 + app
@@ -448,7 +448,7 @@ restaurant_management/
 Автоматизация через GitHub Actions (`.github/workflows/`):
 
 - **`ci.yml`** — 4 независимых job: lint (ruff + mypy), test (pytest + Codecov), security (bandit), docker-build
-- **`ai_review.yml`** — AI code review через Claude API при каждом PR (см. ниже)
+- **`ai_review.yml`** — AI code review через Groq API при каждом PR (см. ниже)
 
 ### Задание 7 — Тесты
 
@@ -479,12 +479,12 @@ Pytest-suite с покрытием 95% (847 statements):
 При создании или обновлении Pull Request (если затронуты `app/` или `tests/`):
 
 1. Собирает `git diff` между веткой PR и базовой веткой
-2. Отправляет diff в **Claude API** (`claude-sonnet-4-6`, до 8000 символов)
+2. Отправляет diff в **Groq API** (`llama-3.3-70b-versatile`, до 8000 символов, бесплатный tier — 6000 req/day)
 3. Публикует ответ-ревью прямо в комментарии Pull Request
 
 **Пример структуры комментария:**
 ```
-## 🤖 AI Code Review
+## 🤖 AI Code Review (Groq)
 
 ### 🐛 Возможные баги
 ### 🔒 Безопасность
@@ -493,12 +493,12 @@ Pytest-suite с покрытием 95% (847 statements):
 ### ✅ Хорошие практики
 ### 📋 Итог
 ---
-*Автоматическое ревью от Claude. Результаты носят рекомендательный характер.*
+*Автоматическое ревью от Groq (llama-3.3-70b-versatile). Результаты носят рекомендательный характер.*
 ```
 
-**Настройка секрета `ANTHROPIC_API_KEY`:**
+**Настройка секрета `GROQ_API_KEY`:**
 
-1. Получите API-ключ на [console.anthropic.com](https://console.anthropic.com)
+1. Получите бесплатный API-ключ на [console.groq.com](https://console.groq.com)
 2. В репозитории на GitHub: **Settings → Secrets and variables → Actions → New repository secret**
-3. Имя: `ANTHROPIC_API_KEY`, значение: ваш ключ
+3. Имя: `GROQ_API_KEY`, значение: ваш ключ
 4. Сохраните — все последующие PR будут автоматически проходить AI-ревью

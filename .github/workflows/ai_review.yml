@@ -9,7 +9,7 @@ on:
 
 jobs:
   ai-review:
-    name: AI Code Review (Claude)
+    name: AI Code Review (Groq)
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write   # required to post the review comment
@@ -26,19 +26,16 @@ jobs:
           git diff origin/${{ github.base_ref }}...HEAD -- app/ tests/ > pr_diff.txt
           echo "diff_size=$(wc -c < pr_diff.txt)" >> $GITHUB_OUTPUT
 
-      # ── 2. Call Claude API and generate the review ──────────────────────
-      - name: AI Code Review via Claude API
+      # ── 2. Call Groq API and generate the review ──────────────────────
+      - name: AI Code Review via Groq API
         if: steps.diff.outputs.diff_size != '0'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
           python - <<'EOF'
-          import json
-          import os
-          from urllib.request import Request, urlopen
-          from urllib.error import URLError
+          import os, json, urllib.request
 
-          diff = open("pr_diff.txt").read()[:8000]   # stay within context budget
+          diff = open("pr_diff.txt").read()[:8000]
 
           prompt = f"""Ты — senior Python разработчик. Проведи code review следующего git diff для системы управления рестораном (FastAPI + SQLAlchemy).
 
@@ -46,7 +43,7 @@ jobs:
 
           Ответ строго на русском языке в формате Markdown:
 
-          ## 🤖 AI Code Review
+          ## 🤖 AI Code Review (Groq)
 
           ### 🐛 Возможные баги
           [найденные баги или «Не обнаружено»]
@@ -67,39 +64,26 @@ jobs:
           [1-2 предложения общего вывода]
 
           ---
-          *Автоматическое ревью от Claude. Результаты носят рекомендательный характер.*"""
+          *Автоматическое ревью от Groq (llama-3.3-70b-versatile). Результаты носят рекомендательный характер.*"""
 
-          payload = json.dumps({
-              "model": "claude-sonnet-4-6",
-              "max_tokens": 1500,
-              "messages": [{"role": "user", "content": prompt}],
-          }).encode()
-
-          req = Request(
-              "https://api.anthropic.com/v1/messages",
-              data=payload,
+          request = urllib.request.Request(
+              "https://api.groq.com/openai/v1/chat/completions",
+              data=json.dumps({
+                  "model": "llama-3.3-70b-versatile",
+                  "max_tokens": 1500,
+                  "messages": [{"role": "user", "content": prompt}]
+              }).encode(),
               headers={
                   "Content-Type": "application/json",
-                  "x-api-key": os.environ["ANTHROPIC_API_KEY"],
-                  "anthropic-version": "2023-06-01",
-              },
+                  "Authorization": f"Bearer {os.environ['GROQ_API_KEY']}"
+              }
           )
+          response = urllib.request.urlopen(request)
+          result = json.loads(response.read())
+          review_text = result["choices"][0]["message"]["content"]
 
-          try:
-              response = urlopen(req, timeout=60)
-              result = json.loads(response.read())
-              review_text = result["content"][0]["text"]
-          except URLError as exc:
-              review_text = (
-                  "## 🤖 AI Code Review\n\n"
-                  f"⚠️ Не удалось получить ответ от Claude API: `{exc}`\n\n"
-                  "Проверьте, что секрет `ANTHROPIC_API_KEY` настроен корректно."
-              )
-
-          with open("review_comment.txt", "w", encoding="utf-8") as f:
+          with open("review_comment.txt", "w") as f:
               f.write(review_text)
-
-          print("Review generated successfully.")
           EOF
 
       # ── 3. Post the review as a PR comment ──────────────────────────────

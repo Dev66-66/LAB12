@@ -183,3 +183,13 @@
 **Результат:** Перезаписан README.md (~180 строк). Разделы: заголовок с badges (CI + Coverage), таблица функционала, текстовая ASCII-диаграмма архитектуры (4 слоя → PostgreSQL), таблица стека (12 технологий), Docker-запуск (5 шагов) и локальный запуск (7 шагов), таблица env-переменных (7 переменных, флаг обязательности), таблица тестовых аккаунтов (admin/staff), таблицы эндпоинтов по всем 6 модулям, ASCII-диаграмма машины состояний заказа, пример запроса/ответа POST /orders (с реальными данными из seed), команды pytest с примерами, дерево структуры проекта (32 узла с описаниями), описание 4 лабораторных заданий со ссылками на файлы, таблица CI-jobs + инструкция по ANTHROPIC_API_KEY.
 
 ---
+
+## Промпт 4.2 — Замена Claude API на Groq API в AI Code Review
+
+**Дата:** 2026-05-13
+
+**Промпт:** Ты — DevOps инженер. В проекте restaurant_management замени Claude API на Groq API в workflow AI Code Review. Groq предоставляет бесплатный tier и OpenAI-совместимый API. 1. Обнови .github/workflows/ai_review.yml: замени имя job на «AI Code Review (Groq)», шаг «AI Code Review via Claude API» → «AI Code Review via Groq API», секрет ANTHROPIC_API_KEY → GROQ_API_KEY, endpoint https://api.anthropic.com/v1/messages → https://api.groq.com/openai/v1/chat/completions, модель claude-sonnet-4-6 → llama-3.3-70b-versatile, парсинг ответа result["content"][0]["text"] → result["choices"][0]["message"]["content"]. 2. Обнови README.md — раздел «⚙️ CI/CD»: описание ai_review.yml, пример комментария, инструкция по настройке секрета (GROQ_API_KEY, console.groq.com, бесплатный tier 6000 req/day). 3. Обнови PROMPT_LOG.md. Коммит: «ci(ai-review): replace Claude API with free Groq API for PR code review».
+
+**Результат:** Обновлён .github/workflows/ai_review.yml: job переименован в «AI Code Review (Groq)», шаг переименован в «AI Code Review via Groq API», секрет ANTHROPIC_API_KEY заменён на GROQ_API_KEY, API endpoint переключён на https://api.groq.com/openai/v1/chat/completions (OpenAI-совместимый), модель llama-3.3-70b-versatile, парсинг ответа через result["choices"][0]["message"]["content"]. Удалён блок try/except URLError (не нужен с Groq). Обновлён README.md: в дереве проекта, разделе «Лабораторные задания» и разделе «⚙️ CI/CD» Claude API заменён на Groq API; инструкция по секрету обновлена на GROQ_API_KEY с ссылкой на console.groq.com; добавлена информация о бесплатном tier (6000 req/day) и модели llama-3.3-70b-versatile.
+
+---

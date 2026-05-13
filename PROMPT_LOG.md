@@ -113,3 +113,13 @@
 **Результат:** Создан app/services/bad_billing.py (~70 строк). Все 10 проблем реализованы: psycopg2.connect с хардкодом пароля и host, f-строки с order_id/discount_code в SQL (инъекция в SELECT, UPDATE и INSERT), расчёт скидки дублирован для SAVE10/SAVE15/STAFF, requests.get/post и time.sleep(2)+time.sleep(1) внутри async-функции, имена x/y/z/d/res/data2/tmp, ноль type hints, ноль docstring.
 
 ---
+
+## Промпт 2.2 — Code Review и рефакторинг billing
+
+**Дата:** 2026-05-13
+
+**Промпт:** Проведи детальный code review app/services/bad_billing.py. Для каждой проблемы: тип, цитата кода, объяснение последствий, исправление. Найди минимум 5 проблем разных типов. Создай исправленную версию billing_service.py: PEP 8, type hints, fully async, обработка граничных случаев, ORM (без SQL-инъекций), SRP, именованные константы, docstrings. Сохрани отчёт в docs/CODE_REVIEW_REPORT.md. Коммиты: «docs(review): add code review report», «refactor(billing): replace bad_billing with clean billing_service».
+
+**Результат:** Найдено и задокументировано 10 проблем: 3×Critical (SQL-injection в 5 запросах, hardcoded secrets, secret leak via HTTP), 2×High (sync I/O in async, нет обработки ошибок), 3×Medium (дублирование скидок, магические числа + float для денег, нарушение SRP), 2×Low (имена переменных, type hints/docstring). docs/CODE_REVIEW_REPORT.md содержит полный разбор с таблицей severity. billing_service.py (257 строк): BillResult dataclass, DISCOUNT_RATES/пороги как Final[Decimal], 5 private helpers (_calculate_subtotal, _apply_discount, _apply_loyalty_bonuses, _validate_discount_code, _persist_bill, _send_bill_notification), httpx вместо requests, ORM select() без f-строк, HTTPException на каждый None, полные type hints и docstrings.
+
+---

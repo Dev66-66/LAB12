@@ -1,15 +1,15 @@
-from app.schemas.auth import UserRegister, UserLogin, Token, UserResponse
-from app.schemas.table import TableCreate, TableUpdate, TableStatusUpdate, TableResponse
-from app.schemas.menu_item import MenuItemCreate, MenuItemUpdate, MenuItemResponse
+from app.schemas.auth import Token, UserLogin, UserRegister, UserResponse
+from app.schemas.menu_item import MenuItemCreate, MenuItemResponse, MenuItemUpdate
 from app.schemas.order import (
-    OrderItemCreate,
+    KitchenQueueItem,
     OrderCreate,
+    OrderItemCreate,
     OrderItemResponse,
     OrderResponse,
     OrderStatusUpdate,
-    KitchenQueueItem,
 )
-from app.schemas.staff import StaffResponse, WaiterStats, KitchenStats
+from app.schemas.staff import KitchenStats, StaffResponse, WaiterStats
+from app.schemas.table import TableCreate, TableResponse, TableStatusUpdate, TableUpdate
 
 __all__ = [
     # auth

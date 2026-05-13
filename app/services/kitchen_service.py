@@ -1,11 +1,9 @@
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
-from app.models.order import Order
 from app.models.order_item import OrderItem
 from app.repositories.base_repository import BaseRepository
 from app.repositories.order_repository import order_repository

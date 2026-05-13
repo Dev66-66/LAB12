@@ -12,10 +12,12 @@ router = APIRouter(prefix="/kitchen", tags=["Kitchen"])
 
 
 def _to_queue_item(item: OrderItem) -> KitchenQueueItem:
-    """Map an ORM OrderItem (with loaded relationships) to the kitchen display schema."""
+    """Map an ORM OrderItem to the kitchen display schema."""
     return KitchenQueueItem(
         order_id=item.order_id,
-        table_number=item.order.table.number if (item.order and item.order.table) else 0,
+        table_number=(
+            item.order.table.number if (item.order and item.order.table) else 0
+        ),
         item_id=item.id,
         dish_name=item.menu_item.name if item.menu_item else "",
         quantity=item.quantity,

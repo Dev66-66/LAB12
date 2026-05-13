@@ -23,7 +23,9 @@ async def list_menu(
     _: User = Depends(get_current_active_user),
 ) -> list[MenuItem]:
     """Return menu items optionally filtered by category and/or availability."""
-    return await menu_service.search_items(db, query=None, category=category, available_only=available_only)
+    return await menu_service.search_items(
+        db, query=None, category=category, available_only=available_only
+    )
 
 
 @router.get(
@@ -37,7 +39,9 @@ async def search_menu(
     _: User = Depends(get_current_active_user),
 ) -> list[MenuItem]:
     """Full-text search across item name and description (case-insensitive)."""
-    return await menu_service.search_items(db, query=q, category=None, available_only=False)
+    return await menu_service.search_items(
+        db, query=q, category=None, available_only=False
+    )
 
 
 @router.get(
@@ -53,7 +57,10 @@ async def get_menu_item(
     """Return a menu item by its primary key, or 404 if not found."""
     item = await menu_repository.get(db, item_id)
     if item is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Menu item {item_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Menu item {item_id} not found",
+        )
     return item
 
 
@@ -114,5 +121,8 @@ async def delete_menu_item(
     """Permanently remove a menu item. Requires admin role."""
     deleted = await menu_repository.delete(db, item_id)
     if not deleted:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Menu item {item_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Menu item {item_id} not found",
+        )
     return Response(status_code=status.HTTP_204_NO_CONTENT)

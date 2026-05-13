@@ -1,15 +1,14 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import ValidationError
-from fastapi.exceptions import RequestValidationError
 from sqlalchemy.ext.asyncio import create_async_engine
 
+from app.api.v1 import auth, kitchen, menu, orders, staff, tables
 from app.core.config import settings
 from app.models.base import Base
-from app.api.v1 import auth, tables, menu, orders, kitchen, staff
 
 
 @asynccontextmanager
@@ -25,7 +24,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    description="REST API for managing restaurant operations: tables, menu, orders, and staff.",
+    description="Restaurant management REST API: tables, menu, orders, and staff.",
     lifespan=lifespan,
 )
 
@@ -48,7 +47,9 @@ app.include_router(staff.router, prefix=_V1_PREFIX)
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+async def validation_exception_handler(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
     """Return a readable 422 response for request validation failures."""
     errors = [
         {"field": " → ".join(str(loc) for loc in err["loc"]), "message": err["msg"]}

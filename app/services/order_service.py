@@ -83,8 +83,8 @@ class OrderService:
             },
         )
 
-        from app.repositories.base_repository import BaseRepository
         from app.models.order_item import OrderItem
+        from app.repositories.base_repository import BaseRepository
 
         item_repo: BaseRepository[OrderItem] = BaseRepository(OrderItem)
         for row in item_rows:
@@ -112,7 +112,8 @@ class OrderService:
             )
 
         # Waiters may only modify their own orders.
-        if current_user.role not in ("admin", "manager") and order.waiter_id != current_user.id:
+        is_own_order = order.waiter_id == current_user.id
+        if current_user.role not in ("admin", "manager") and not is_own_order:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You can only update your own orders",
@@ -159,7 +160,8 @@ class OrderService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Cannot cancel an order with status '{order.status}'",
             )
-        if current_user.role not in ("admin", "manager") and order.waiter_id != current_user.id:
+        is_own_order = order.waiter_id == current_user.id
+        if current_user.role not in ("admin", "manager") and not is_own_order:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You can only cancel your own orders",

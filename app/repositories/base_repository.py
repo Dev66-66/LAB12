@@ -1,14 +1,10 @@
-from typing import Generic, TypeVar
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.base import Base
 
-ModelType = TypeVar("ModelType", bound=Base)
 
-
-class BaseRepository(Generic[ModelType]):
+class BaseRepository[ModelType: Base]:
     """Generic async repository providing basic CRUD over a SQLAlchemy model."""
 
     def __init__(self, model: type[ModelType]) -> None:
@@ -45,7 +41,7 @@ class BaseRepository(Generic[ModelType]):
         return db_obj
 
     async def delete(self, db: AsyncSession, id: int) -> bool:
-        """Delete a record by primary key. Return True if deleted, False if not found."""
+        """Delete by primary key. Return True if deleted, False if not found."""
         db_obj = await self.get(db, id)
         if db_obj is None:
             return False

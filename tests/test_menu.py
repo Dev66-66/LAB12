@@ -1,9 +1,8 @@
 from __future__ import annotations
 
+from conftest import get_auth_headers, make_user
 from faker import Faker
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from conftest import get_auth_headers, make_user
 
 fake = Faker()
 
@@ -153,7 +152,12 @@ async def test_update_menu_item_as_admin_returns_updated_item(
 ):
     response = await client.put(
         f"{_MENU}/{test_menu_item.id}",
-        json={"name": "Updated Name", "price": "19.99", "preparation_time_minutes": 25, "category": "main_course"},
+        json={
+            "name": "Updated Name",
+            "price": "19.99",
+            "preparation_time_minutes": 25,
+            "category": "main_course",
+        },
         headers=get_auth_headers(admin_user),
     )
 
@@ -174,7 +178,9 @@ async def test_toggle_availability_disables_available_item(
     assert response.json()["is_available"] is False
 
 
-async def test_delete_menu_item_as_admin_returns_204(client, test_menu_item, admin_user):
+async def test_delete_menu_item_as_admin_returns_204(
+    client, test_menu_item, admin_user
+):
     response = await client.delete(
         f"{_MENU}/{test_menu_item.id}",
         headers=get_auth_headers(admin_user),
@@ -237,7 +243,9 @@ async def test_deactivate_staff_member_sets_is_active_false(
     client, async_session: AsyncSession, admin_user
 ):
     n = fake.unique.random_int(min=10_000, max=99_999)
-    target = await make_user(async_session, f"staff{n}", f"staff{n}@test.example", "waiter")
+    target = await make_user(
+        async_session, f"staff{n}", f"staff{n}@test.example", "waiter"
+    )
 
     response = await client.patch(
         f"{_STAFF}/{target.id}/deactivate",

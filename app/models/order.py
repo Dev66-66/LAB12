@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Enum, ForeignKey, Numeric, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -47,7 +47,7 @@ class Order(Base, TimestampMixin):
     total_amount: Mapped[Decimal] = mapped_column(Numeric(10, 2), default=0)
     """Running total recalculated on item changes."""
 
-    notes: Mapped[Optional[str]] = mapped_column(Text)
+    notes: Mapped[str | None] = mapped_column(Text)
     """Free-text instructions from the customer."""
 
     table: Mapped[Table] = relationship(
@@ -60,7 +60,7 @@ class Order(Base, TimestampMixin):
     )
     """Waiter responsible for this order."""
 
-    items: Mapped[List[OrderItem]] = relationship(
+    items: Mapped[list[OrderItem]] = relationship(
         "OrderItem", back_populates="order", lazy="selectin"
     )
     """Individual line items that make up this order."""

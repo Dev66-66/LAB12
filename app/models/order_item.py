@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Enum, ForeignKey, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -48,7 +48,7 @@ class OrderItem(Base, TimestampMixin):
     )
     """Kitchen preparation state for this line item."""
 
-    notes: Mapped[Optional[str]] = mapped_column(String(255))
+    notes: Mapped[str | None] = mapped_column(String(255))
     """Optional per-item instructions (e.g. allergen requests)."""
 
     order: Mapped[Order] = relationship(

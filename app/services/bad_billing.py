@@ -1,8 +1,7 @@
-import asyncio
-import requests
 import time
-import psycopg2
 
+import psycopg2
+import requests
 
 DB_PASSWORD = "postgres123"
 SECRET_KEY = "my-super-secret-billing-key-2024"
@@ -18,15 +17,19 @@ async def calculate_bill(order_id, discount_code):
     cur.execute(f"SELECT * FROM orders WHERE id = {order_id}")
     data = cur.fetchone()
 
-    cur.execute(f"SELECT * FROM order_items WHERE order_id = {order_id} AND status != 'cancelled'")
+    cur.execute(
+        f"SELECT * FROM order_items WHERE order_id = {order_id}"
+        " AND status != 'cancelled'"
+    )
     items = cur.fetchall()
 
     res = 0
     for x in items:
         res = res + x[4] * x[3]
 
-    data2 = requests.get(f"http://promo-service.internal/validate?code={discount_code}&key={SECRET_KEY}")
-    tmp = data2.json()
+    requests.get(
+        f"http://promo-service.internal/validate?code={discount_code}&key={SECRET_KEY}"
+    )
 
     if discount_code == "SAVE10":
         d = res * 0.1
@@ -54,14 +57,14 @@ async def calculate_bill(order_id, discount_code):
 
     time.sleep(2)
 
-    y = requests.post(
+    requests.post(
         "http://notifications.internal/send",
-        json={"order": order_id, "total": res, "key": SECRET_KEY}
+        json={"order": order_id, "total": res, "key": SECRET_KEY},
     )
 
-    z = res * 0.0
     cur.execute(
-        f"UPDATE orders SET total_amount = {res}, status = 'confirmed' WHERE id = {order_id}"
+        f"UPDATE orders SET total_amount = {res},"
+        f" status = 'confirmed' WHERE id = {order_id}"
     )
     cur.execute(
         f"INSERT INTO billing_log (order_id, amount, discount_code, created_at) "

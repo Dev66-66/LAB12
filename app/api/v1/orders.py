@@ -65,7 +65,10 @@ async def get_order(
     """Return a specific order by its primary key, or 404 if not found."""
     order = await order_repository.get(db, order_id)
     if order is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Order {order_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Order {order_id} not found",
+        )
     return order
 
 
@@ -104,7 +107,9 @@ async def update_order_status(
     Allowed transitions are enforced by the state machine.
     Waiters may only update their own orders.
     """
-    return await order_service.update_order_status(db, order_id, data.status, current_user)
+    return await order_service.update_order_status(
+        db, order_id, data.status, current_user
+    )
 
 
 @router.post(

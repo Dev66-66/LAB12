@@ -65,11 +65,16 @@ async def get_current_active_user(
 def require_role(*roles: str) -> Callable:
     """Return a FastAPI dependency that enforces one of the given roles."""
 
-    async def _check_role(current_user: User = Depends(get_current_active_user)) -> User:
+    async def _check_role(
+        current_user: User = Depends(get_current_active_user),
+    ) -> User:
         if current_user.role not in roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Role '{current_user.role}' is not allowed. Required: {list(roles)}",
+                detail=(
+                    f"Role '{current_user.role}' is not allowed."
+                    f" Required: {list(roles)}"
+                ),
             )
         return current_user
 

@@ -51,7 +51,10 @@ async def get_table(
     """Return a table by its primary key, or 404 if not found."""
     table = await table_repository.get(db, table_id)
     if table is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Table {table_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Table {table_id} not found",
+        )
     return table
 
 
@@ -84,7 +87,10 @@ async def update_table(
     """Update any fields of an existing table."""
     table = await table_repository.get(db, table_id)
     if table is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Table {table_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Table {table_id} not found",
+        )
     return await table_repository.update(db, table, data.model_dump(exclude_unset=True))
 
 
@@ -99,7 +105,7 @@ async def update_table_status(
     db: AsyncSession = Depends(get_db),
     _: User = Depends(get_current_active_user),
 ) -> Table:
-    """Change the availability status of a table (free, occupied, reserved, maintenance)."""
+    """Change the availability status of a table."""
     return await table_service.update_status(db, table_id, data.status)
 
 
@@ -116,5 +122,8 @@ async def delete_table(
     """Permanently remove a table record. Requires admin role."""
     deleted = await table_repository.delete(db, table_id)
     if not deleted:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Table {table_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Table {table_id} not found",
+        )
     return Response(status_code=status.HTTP_204_NO_CONTENT)

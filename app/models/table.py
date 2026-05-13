@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Enum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -31,10 +31,10 @@ class Table(Base, TimestampMixin):
     )
     """Current availability status."""
 
-    location: Mapped[Optional[str]] = mapped_column(String(100))
+    location: Mapped[str | None] = mapped_column(String(100))
     """Optional description of the table's physical location."""
 
-    orders: Mapped[List[Order]] = relationship(
+    orders: Mapped[list[Order]] = relationship(
         "Order", back_populates="table", lazy="selectin"
     )
     """All orders placed at this table."""

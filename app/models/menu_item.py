@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Optional
 
 from sqlalchemy import Boolean, Enum, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
@@ -20,7 +19,7 @@ class MenuItem(Base, TimestampMixin):
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     """Display name shown to guests."""
 
-    description: Mapped[Optional[str]] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text)
     """Optional longer description."""
 
     category: Mapped[str] = mapped_column(
@@ -46,5 +45,5 @@ class MenuItem(Base, TimestampMixin):
     is_available: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
     """Whether this item can currently be ordered."""
 
-    calories: Mapped[Optional[int]]
+    calories: Mapped[int | None]
     """Optional caloric value for nutritional display."""

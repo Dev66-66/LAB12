@@ -71,7 +71,10 @@ async def get_staff_member(
     """Return a staff member by their primary key, or 404 if not found."""
     user = await user_repository.get(db, user_id)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User {user_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User {user_id} not found",
+        )
     return user
 
 
@@ -87,5 +90,8 @@ async def deactivate_staff(
     """Set is_active=False on a staff account, preventing further logins."""
     user = await user_repository.get(db, user_id)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User {user_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User {user_id} not found",
+        )
     return await user_repository.update(db, user, {"is_active": False})

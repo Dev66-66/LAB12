@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from faker import Faker
-
 from conftest import get_auth_headers
+from faker import Faker
 
 fake = Faker()
 
@@ -16,7 +15,9 @@ _ORDERS = "/api/v1/orders"
 
 async def test_get_kitchen_queue_as_chef_returns_queue(client, test_order, chef_user):
     # test_order items are in "pending" status → visible in queue
-    response = await client.get(f"{_KITCHEN}/queue", headers=get_auth_headers(chef_user))
+    response = await client.get(
+        f"{_KITCHEN}/queue", headers=get_auth_headers(chef_user)
+    )
 
     assert response.status_code == 200
     queue = response.json()
@@ -26,7 +27,9 @@ async def test_get_kitchen_queue_as_chef_returns_queue(client, test_order, chef_
 
 
 async def test_get_kitchen_queue_as_waiter_returns_403(client, test_order, waiter_user):
-    response = await client.get(f"{_KITCHEN}/queue", headers=get_auth_headers(waiter_user))
+    response = await client.get(
+        f"{_KITCHEN}/queue", headers=get_auth_headers(waiter_user)
+    )
 
     assert response.status_code == 403
 
@@ -157,7 +160,9 @@ async def test_mark_item_ready_nonexistent_returns_404(client, chef_user):
 
 async def test_kitchen_stats_returns_correct_counts(client, test_order, chef_user):
     # test_order has one item in "pending" status
-    response = await client.get(f"{_KITCHEN}/stats", headers=get_auth_headers(chef_user))
+    response = await client.get(
+        f"{_KITCHEN}/stats", headers=get_auth_headers(chef_user)
+    )
 
     assert response.status_code == 200
     body = response.json()

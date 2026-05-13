@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import pytest
 from decimal import Decimal
+
+from conftest import get_auth_headers, make_user
 from faker import Faker
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.table import Table
-from conftest import get_auth_headers, make_user
 
 fake = Faker()
 
@@ -213,7 +213,9 @@ async def test_list_active_orders_excludes_closed_orders(
         headers=get_auth_headers(waiter_user),
     )
 
-    response = await client.get(f"{_ORDERS}/active", headers=get_auth_headers(waiter_user))
+    response = await client.get(
+        f"{_ORDERS}/active", headers=get_auth_headers(waiter_user)
+    )
 
     assert response.status_code == 200
     ids = [o["id"] for o in response.json()]

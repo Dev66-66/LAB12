@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, Enum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -45,7 +45,7 @@ class User(Base, TimestampMixin):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     """Soft-disable flag."""
 
-    orders: Mapped[List[Order]] = relationship(
+    orders: Mapped[list[Order]] = relationship(
         "Order", back_populates="waiter", lazy="selectin"
     )
     """Orders served by this waiter."""

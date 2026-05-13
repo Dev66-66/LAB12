@@ -224,6 +224,16 @@
 
 ---
 
+## Промпт 5.11 — Переход на новую библиотеку google-genai с моделью gemini-2.0-flash
+
+**Дата:** 2026-05-13
+
+**Промпт:** В файле .github/workflows/ai_review.yml замени шаг "AI Code Review via Gemini API" — используй новую библиотеку google-genai вместо устаревшей google-generativeai: `pip install -q google-genai`; импорт `from google import genai`; создание клиента через `genai.Client(api_key=api_key)`; вызов `client.models.generate_content(model="gemini-2.0-flash", contents=prompt)`. Обнови PROMPT_LOG.md. Коммит: «ci(ai-review): switch to new google-genai library with gemini-2.0-flash».
+
+**Результат:** Шаг обновлён: `pip install -q google-generativeai` → `pip install -q google-genai`; импорт `google.generativeai as genai` → `from google import genai`; `genai.configure()` + `GenerativeModel()` → `genai.Client(api_key=api_key)`; вызов `model.generate_content()` → `client.models.generate_content(model="gemini-2.0-flash", contents=prompt)`. Prompt перестроен через конкатенацию строк (исключает YAML-ошибку с `{diff}` на нулевом отступе). YAML-валидация: OK.
+
+---
+
 ## Промпт 5.10 — Замена Groq API на Google Gemini API в ai_review.yml
 
 **Дата:** 2026-05-13

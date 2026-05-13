@@ -63,3 +63,13 @@
 **Результат:** Реализованы 5 файлов: base_repository.py (Generic BaseRepository с 5 методами CRUD), user_repository.py (3 метода + синглтон user_repository), table_repository.py (3 метода + синглтон), menu_repository.py (3 метода + ilike-поиск + синглтон), order_repository.py (5 методов + get_kitchen_queue с selectinload + синглтон). Обновлён repositories/__init__.py. Импорт проверен: все 5+3+3+3+5 методов зарегистрированы корректно.
 
 ---
+
+## Промпт 1.4 — Pydantic v2 схемы
+
+**Дата:** 2026-05-13
+
+**Промпт:** Создай Pydantic v2 схемы для restaurant_management. auth.py: UserRegister (username, email, password, full_name, role; @field_validator password — буква+цифра), UserLogin, Token, UserResponse (from_attributes, без пароля). table.py: TableCreate (number>0, capacity 1-20), TableUpdate (все Optional), TableStatusUpdate (Literal статусов), TableResponse (from_attributes + created_at). menu_item.py: MenuItemCreate (price Decimal ge=0 decimal_places=2, prep_time 1-300), MenuItemUpdate (все Optional), MenuItemResponse (from_attributes + is_available). order.py: OrderItemCreate (quantity 1-99), OrderCreate (items min_length=1), OrderItemResponse (computed menu_item_name через @computed_field + _MenuItemMinimal exclude=True), OrderResponse (computed table_number + waiter_name), OrderStatusUpdate, KitchenQueueItem. staff.py: StaffResponse, WaiterStats, KitchenStats. schemas/__init__.py экспортирует все 19 классов. Коммит: «feat(schemas): add Pydantic v2 schemas with validators and computed fields».
+
+**Результат:** Реализованы 5 файлов схем + __init__.py. Ключевые решения: @field_validator на password (буква + цифра), computed_field + @property для menu_item_name/table_number/waiter_name через вспомогательные _*Minimal модели с exclude=True. Все валидаторы проверены: password без цифры → ошибка, password без буквы → ошибка, capacity>20 → ошибка, пустой items → ошибка. Все 19 классов экспортируются через schemas/__init__.py.
+
+---

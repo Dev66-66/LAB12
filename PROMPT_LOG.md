@@ -213,3 +213,13 @@
 **Результат:** Обновлён .github/workflows/ci.yml: в команду pytest добавлен флаг `--cov-report=term-missing` (вывод непокрытых строк в лог CI); в шаг `Upload coverage to Codecov` добавлено поле `token: ${{ secrets.CODECOV_TOKEN }}` (требуется Codecov v4+ для приватных и публичных репозиториев). Шаг `codecov/codecov-action@v4` уже присутствовал в файле с `files: coverage.xml` и `fail_ci_if_error: false`. Для активации нужно добавить CODECOV_TOKEN в GitHub Secrets репозитория Dev66-66/LAB12.
 
 ---
+
+## Промпт 5.3 — Упрощение Codecov (без токена)
+
+**Дата:** 2026-05-13
+
+**Промпт:** В проекте restaurant_management обнови .github/workflows/ci.yml — шаг загрузки покрытия упрости, токен не нужен (публичный репозиторий): `uses: codecov/codecov-action@v4` с полями `files: coverage.xml` и `fail_ci_if_error: false`. Убедись что шаг запуска тестов генерирует coverage.xml: `pytest --cov=app --cov-report=xml --cov-report=term-missing --cov-fail-under=70`. Обновить PROMPT_LOG.md. Коммит: «ci: fix Codecov upload without token for public repo».
+
+**Результат:** Из шага `Upload coverage to Codecov` удалено поле `token: ${{ secrets.CODECOV_TOKEN }}` — для публичных репозиториев токен не требуется. Команда pytest уже содержала `--cov-report=xml --cov-report=term-missing --cov-fail-under=70`. Итоговый шаг: `codecov/codecov-action@v4` с `files: coverage.xml` и `fail_ci_if_error: false`.
+
+---

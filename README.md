@@ -504,3 +504,4 @@ Pytest-suite с покрытием 95% (847 statements):
 4. Сохраните — все последующие PR будут автоматически проходить AI-ревью
 
 <!-- test AI review -->
+<!-- test AI review -->

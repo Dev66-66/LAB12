@@ -224,6 +224,16 @@
 
 ---
 
+## Промпт 5.10 — Замена Groq API на Google Gemini API в ai_review.yml
+
+**Дата:** 2026-05-13
+
+**Промпт:** В файле .github/workflows/ai_review.yml замени Groq API на Google Gemini API. Шаг "AI Code Review via Groq API" заменить на "AI Code Review via Gemini API": секрет GROQ_API_KEY → GEMINI_API_KEY; установка `pip install -q google-generativeai`; использовать `google.generativeai` с моделью `gemini-1.5-flash`; обработка ошибок через `except Exception`. Обновить README.md — в разделе CI/CD заменить Groq на Gemini, добавить инструкцию по получению ключа на aistudio.google.com/apikey (бесплатно, без карты). Обновить PROMPT_LOG.md. Коммит: «ci(ai-review): switch from Groq to Gemini API to fix Cloudflare 403 block».
+
+**Результат:** Обновлён .github/workflows/ai_review.yml: шаг переименован в "AI Code Review via Gemini API", секрет заменён на GEMINI_API_KEY, добавлен `pip install -q google-generativeai`, API-вызов переведён на `google.generativeai.GenerativeModel("gemini-1.5-flash").generate_content()`. Prompt перестроен через конкатенацию строк (избегая YAML-ошибки с `{diff}` на нулевом отступе). Обновлён README.md: в структуре проекта, разделе «Задание 4» и разделе «⚙️ CI/CD» Groq заменён на Gemini; пример комментария обновлён; инструкция по ключу указывает на aistudio.google.com/apikey. YAML-валидация: OK.
+
+---
+
 ## Промпт 5.9 — Исправление YAML-синтаксической ошибки в ai_review.yml
 
 **Дата:** 2026-05-13

@@ -25,64 +25,52 @@ jobs:
           echo "diff_size=$(wc -c < pr_diff.txt)" >> $GITHUB_OUTPUT
           cat pr_diff.txt
 
-      # ── 2. Call Groq API and generate the review ──────────────────────
-      - name: AI Code Review via Groq API
+      # ── 2. Call Gemini API and generate the review ────────────────────
+      - name: AI Code Review via Gemini API
         if: always()
         env:
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
+          pip install -q google-generativeai
           python3 << 'PYEOF'
-          import os, json, urllib.request, urllib.error
+          import os, google.generativeai as genai
 
-          api_key = os.environ.get("GROQ_API_KEY", "")
+          api_key = os.environ.get("GEMINI_API_KEY", "")
           if not api_key:
-              print("ERROR: GROQ_API_KEY is empty!")
+              print("ERROR: GEMINI_API_KEY is empty!")
               exit(1)
-
-          print(f"API key starts with: {api_key[:8]}...")
 
           try:
               diff = open("pr_diff.txt").read()[:6000]
           except FileNotFoundError:
               diff = "No diff available"
 
+          genai.configure(api_key=api_key)
+          model = genai.GenerativeModel("gemini-1.5-flash")
+
           prompt = (
-              "Ты — senior Python разработчик. Проведи краткий code review следующего git diff.\n\n"
+              "Ты — senior Python разработчик. Проведи краткий code review"
+              " следующего git diff для системы управления рестораном"
+              " (FastAPI + SQLAlchemy).\n\n"
               + diff
-              + "\n\nОтвет на русском языке в формате Markdown со следующими секциями:\n"
-              "## 🤖 AI Code Review (Groq)\n"
+              + "\n\nОтвет на русском языке в формате Markdown:\n\n"
+              "## 🤖 AI Code Review (Gemini)\n\n"
               "### 🐛 Возможные баги\n"
               "### 🔒 Безопасность\n"
               "### ✅ Хорошие практики\n"
-              "### 📋 Итог\n"
+              "### 📋 Итог\n\n"
               "---\n"
-              "*Автоматическое ревью от Groq (llama-3.3-70b-versatile)*"
-          )
-
-          payload = json.dumps({
-              "model": "llama-3.3-70b-versatile",
-              "max_tokens": 1000,
-              "messages": [{"role": "user", "content": prompt}]
-          }).encode("utf-8")
-
-          req = urllib.request.Request(
-              "https://api.groq.com/openai/v1/chat/completions",
-              data=payload,
-              headers={
-                  "Content-Type": "application/json",
-                  "Authorization": f"Bearer {api_key}"
-              }
+              "*Автоматическое ревью от Google Gemini 1.5 Flash."
+              " Результаты носят рекомендательный характер.*"
           )
 
           try:
-              with urllib.request.urlopen(req) as resp:
-                  result = json.loads(resp.read())
-                  review_text = result["choices"][0]["message"]["content"]
-                  print("SUCCESS: Got review from Groq")
-          except urllib.error.HTTPError as e:
-              body = e.read().decode()
-              print(f"HTTP Error {e.code}: {body}")
-              review_text = f"⚠️ Ошибка AI ревью: HTTP {e.code}\n```\n{body}\n```"
+              response = model.generate_content(prompt)
+              review_text = response.text
+              print("SUCCESS: Got review from Gemini")
+          except Exception as e:
+              print(f"Error: {e}")
+              review_text = f"⚠️ Ошибка AI ревью: {e}"
 
           with open("review_comment.txt", "w") as f:
               f.write(review_text)

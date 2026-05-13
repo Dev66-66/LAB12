@@ -412,7 +412,7 @@ restaurant_management/
 │
 ├── .github/workflows/
 │   ├── ci.yml                      # CI: lint, test, security, docker build
-│   └── ai_review.yml               # AI code review через Groq API
+│   └── ai_review.yml               # AI code review через Gemini API
 │
 ├── Dockerfile                      # Multi-stage сборка (builder + runtime, non-root user)
 ├── docker-compose.yml              # PostgreSQL 16 + app
@@ -448,7 +448,7 @@ restaurant_management/
 Автоматизация через GitHub Actions (`.github/workflows/`):
 
 - **`ci.yml`** — 4 независимых job: lint (ruff + mypy), test (pytest + Codecov), security (bandit), docker-build
-- **`ai_review.yml`** — AI code review через Groq API при каждом PR (см. ниже)
+- **`ai_review.yml`** — AI code review через Gemini API при каждом PR (см. ниже)
 
 ### Задание 7 — Тесты
 
@@ -476,32 +476,32 @@ Pytest-suite с покрытием 95% (847 statements):
 
 ### ai_review.yml — AI Code Review
 
-При создании или обновлении Pull Request (если затронуты `app/` или `tests/`):
+При создании или обновлении Pull Request:
 
 1. Собирает `git diff` между веткой PR и базовой веткой
-2. Отправляет diff в **Groq API** (`llama-3.3-70b-versatile`, до 8000 символов, бесплатный tier — 6000 req/day)
+2. Отправляет diff в **Google Gemini API** (`gemini-1.5-flash`, до 6000 символов, бесплатный tier)
 3. Публикует ответ-ревью прямо в комментарии Pull Request
 
 **Пример структуры комментария:**
 ```
-## 🤖 AI Code Review (Groq)
+## 🤖 AI Code Review (Gemini)
 
 ### 🐛 Возможные баги
 ### 🔒 Безопасность
-### ⚡ Производительность
-### 📝 Стиль и PEP 8
 ### ✅ Хорошие практики
 ### 📋 Итог
 ---
-*Автоматическое ревью от Groq (llama-3.3-70b-versatile). Результаты носят рекомендательный характер.*
+*Автоматическое ревью от Google Gemini 1.5 Flash. Результаты носят рекомендательный характер.*
 ```
 
-**Настройка секрета `GROQ_API_KEY`:**
+**Настройка секрета `GEMINI_API_KEY`:**
 
-1. Получите бесплатный API-ключ на [console.groq.com](https://console.groq.com)
-2. В репозитории на GitHub: **Settings → Secrets and variables → Actions → New repository secret**
-3. Имя: `GROQ_API_KEY`, значение: ваш ключ
-4. Сохраните — все последующие PR будут автоматически проходить AI-ревью
+1. Зайди на [aistudio.google.com/apikey](https://aistudio.google.com/apikey) (бесплатно, без карты)
+2. Нажми **"Create API Key"**
+3. В репозитории на GitHub: **Settings → Secrets and variables → Actions → New repository secret**
+   - Name: `GEMINI_API_KEY`
+   - Value: твой ключ
+4. Сохрани — все последующие PR будут автоматически проходить AI-ревью
 
 <!-- test AI review -->
 <!-- test AI review -->

@@ -4,7 +4,8 @@
 
 **Студент:** Фомичев Ярослав Николаевич  
 **Группа:** 221131  
-**Вариант:** 21 — Система управления рестораном  
+**Вариант:** 21 — Система управления рестораном
+**Сложность:** Повышенная
 
 ![CI](https://github.com/Dev66-66/LAB12/actions/workflows/ci.yml/badge.svg)
 ![Coverage](https://codecov.io/gh/Dev66-66/LAB12/branch/master/graph/badge.svg)
